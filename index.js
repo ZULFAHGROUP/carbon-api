@@ -13,7 +13,7 @@ const faqRoute = require('./routes/faqRoute');
 
 const bankRoutes = require('./routes/bankRoutes')
 
-const  {billRoutes, BillHistoryRoute}  = require('./routes/billRoutes')
+const  billRoutes  = require('./routes/billRoutes')
 
 const { notFoundMessage } = require('./constants/messages')
 const sequelize = require('./config/db')
