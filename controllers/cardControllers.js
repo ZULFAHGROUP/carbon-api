@@ -8,35 +8,38 @@ const cardModel = require('../models/cardModel')
 
     // validate amount, email
 
-try{
-const startAddCard = async (req,res)=>{
-        const {amount, email }= req.body
 
+const startAddCard = async (req, res) => {
+    const { amount, email } = req.body
+    try {
         const CheckIfUserIsRegistered = await userModel.findOne({
             where: {
                 email: email
             }
         });
-        if(!CheckIfUserIsRegistered){
+        if (!CheckIfUserIsRegistered) {
             res.status(404).json({
                 status: false,
                 message: "User is not registered"
-        })
-        return
-    }
+            })
+            return
+        }
     
-    const initializeCardTransaction = await startPayment(amount, email);
-    if (!initializeCardTransaction.data.status){
-    //throw new Error ('Invalid transaction')
-    res.status(400).json({
-        status: false,
-        message: 'Invalid transaction'
-    })
-    }
+        const initializeCardTransaction = await startPayment(amount, email);
+        if (!initializeCardTransaction.data.status) {
+            //throw new Error ('Invalid transaction')
+            res.status(400).json({
+                status: false,
+                message: 'Invalid transaction'
+            })
+        }
 
-    res.json (initializeCardTransaction.data)
-    }
+        res.status(200).json(initializeCardTransaction.data)
+        
+    } catch (error) {
 
+    }
+}
 
 const completeAddCard = async (req,res) =>{
     const ref= req.body.reference
@@ -140,4 +143,3 @@ const deleteCard = async (req, res) => {
 
 
 module.exports = {startAddCard, completeAddCard, findCard,deleteCard}
-}catch (err) {console.log (err)}
