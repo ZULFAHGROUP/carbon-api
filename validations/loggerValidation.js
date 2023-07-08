@@ -1,13 +1,11 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const validateLogger = (data) => {
+  const createLogerSchema = Joi.object({
+    email: Joi.string().email().required()
+});
 
-  const createLogerSchema =   Joi.object({
-        email: Joi.string().email(),
-        user_id: Joi.string()
-    })
+  return createLogerSchema.validate(data);
+};
 
-    return createLogerSchema.validate(data);
-}
-
-module.exports = validateLogger
+module.exports = validateLogger;
