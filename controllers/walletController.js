@@ -7,7 +7,7 @@ const {
 } = require("../constants/enums");
 const { v4: uuidv4 } = require("uuid");
 const { startPayment, completePayment } = require("../services/payment");
-const {messages,walletBalanceMessage,
+const {walletBalanceMessage,
 errorBalancemessage,
 errorSendMoneyMessage ,
 errorSendMoneyMessageLimit,
@@ -161,7 +161,7 @@ const sendMoney = async (req, res) => {
     const userDetails = await getUserDetails(user_id);
     const userWalletDetails = await getUserWallet(user_id);
     const recipientDetails = await getUserWithPhone(phone);
-    if(user_id == recipientDetails.user_id) throw new Error('you cannot send money to self', 400)
+    if(user_id == recipientDetails.user_id) throw new Error(sendMoneyToSelfMessage, 400)
     if (!recipientDetails) throw new Error(sendMoneyErrorRecipientDetails, 400);
     if (userWalletDetails.amount_after < amount)
       throw new Error(userWalletDetailsError, 400);

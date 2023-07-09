@@ -12,6 +12,8 @@ const messages = {
   userWalletDetailsError: "insufficient balance. Please top-up your wallet",
   receipientSuccessmessage: "Transaction completed successfully",
   sendMoneyToSelfMessage:'you cannot send money to self',
+  errorFetchingTransactions: "Error fetching transactions from database",
+  transactionLogMessage: "daily transaction logged successfully"
 };
 
 module.exports = messages;

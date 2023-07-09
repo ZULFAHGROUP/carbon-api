@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const transactionModel = require("../models/transactionModel");
 const { transactionTypeEnum } = require("../constants/enums");
 const {getTodaysDate} = require('../utils/helpers')
+const {errorFetchingTransactions, transactionLogMessage} = require("../constants/messages");
 const getTransactions = async (req, res) => {
   try {
     const { page } = req.query;
@@ -146,9 +147,69 @@ const filterTransaction = async (req, res) => {
   }
 };
 
-const dailyTransaction = (req, res) => {
+const transactionSum = (array)=>{
+  const initialValue = 0;
+  const sumWithInitial = array.reduce((accumulator, currentValue) => accumulator + currentValue.amount, initialValue )
+   return sumWithInitial
+}
+
+const dailyTransaction = async (req, res) => {
+   const { user_id } = req.body;
+
+   try{
+   
+    const todayDate = getTodaysDate();
+    const userCreditTransactionsFromDB = await transactionModel.findAll({
+      attributes: [ "amount" ],
+      where: {
+        user_id: user_id,
+        createdAt: todayDate,
+        transaction_type: transactionTypeEnum.CREDIT
+      }
+      
+    });
+
+    const userDebitTransactionsFromDB = await transactionModel.findAll({
+          attributes: [ "amount" ],
+          where: {
+            user_id: user_id,
+            createdAt: todayDate,
+            transaction_type: transactionTypeEnum.DEBIT
+          }
+          
+        });
+         //[{ amount: 100 }, { amount: 200}, { amount: 300}]
+
+    if (!userCreditTransactionsFromDB ||!userDebitTransactionsFromDB ) throw new Error(errorFetchingTransactions, 400);
+   
+    const creditTransactions = await transactionSum(userCreditTransactionsFromDB);
+
+    const debitTransactions = await transactionSum(userDebitTransactionsFromDB);
+
+    const totalTransactions = creditTransactions + debitTransactions;
+
+  res.satus(200).json({
+    status: true,
+    totalCreditAmount: creditTransactions,
+    totalDebitAmount: debitTransactions,
+    totalTransactionAmount: totalTransactions,
+    message: transactionLogMessage,
+  });
+
+} catch (error) {
+  
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+   }
+  
+  };
+
+const weeklyTransaction = (req, res) => {
   const { transactionType } = req.query;
   const { user_id } = req.body;
+
   res.json({
     status: true,
     credit: creditTransactions,
@@ -156,13 +217,16 @@ const dailyTransaction = (req, res) => {
     message: "daily transaction logged successfully",
   });
 };
-const weeklyTransaction = (req, res) => {
-  const { transactionType } = req.query;
-  const { user_id } = req.body;
-};
 const monthlyTransaction = async (req, res) => {
   const { transactionType } = req.query;
   const { user_id } = req.body;
+
+  res.json({
+    status: true,
+    credit: creditTransactions,
+    debit: debitTransactions,
+    message: "daily transaction logged successfully",
+  });
 };
 const getUserTransaction = (user_id) => {
   return transactionModel.findAll({
