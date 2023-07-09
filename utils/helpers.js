@@ -23,7 +23,24 @@ const generateOtp = (num) => {
 
 }
 
+
+const phoneValidation = (userPhone) => { 
+    if(!userPhone) return false
+    const phone = userPhone.trim()
+    const firstChar = phone.charAt(0)
+    if (firstChar === '+' && phone.length === 14) {
+        return phone
+    } else if (firstChar === '0' && phone.length === 11) {
+        return `+234${phone.slice(1)}`
+    } else if (firstChar === '2' && phone.length === 13) { 
+        return `+${phone}`
+    } else {
+        return false
+    }
+}
+
 module.exports = {
     hashPassword,
-    generateOtp
+    generateOtp,
+    phoneValidation
 }

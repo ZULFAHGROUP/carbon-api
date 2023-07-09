@@ -64,7 +64,7 @@ const utilityFunc =async(request, result)=>{
 }
 
 
-const BillLog =async()=>{
+const BillLog =async ()=>{
     await BillHistory.create({
         biller_id: billerId,
         bill_amount:amount,

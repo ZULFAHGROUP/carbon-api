@@ -1,13 +1,12 @@
 const WalletModel = require('../models/walletModel')
-const userModel = require('../models/userModels')
+const UserModel = require('../models/userModels')
 const transactionModel = require('../models/transactionModel')
 const { TransactionStatusEnum, TransactionTypeEnum } = require('../constants/enums')
 const { v4: uuidv4 } = require('uuid');
 const { startPayment, completePayment } = require('../services/payment')
-
-
+const messages = require('../constants/messages')
 const credit = async (amountPassed, user_id, comments) => {
-    const amount = Number(amountPassed)
+    const amount = Math.abs(Number(amountPassed))
     const userDetails = await getUserWallet(user_id)
     const initialbalance = Number(userDetails.amount_after)
     const newbalance = initialbalance + amount  //amount_after
@@ -17,7 +16,7 @@ const credit = async (amountPassed, user_id, comments) => {
 }
 
 const debit = async(amountPassed, user_id, comments) => {
-    const amount = Number(amountPassed)
+    const amount = Math.abs(Number(amountPassed))
     const userDetails = await getUserWallet(user_id)
     const initialbalance = Number(userDetails.amount_after)
     if(initialbalance < amount) return false
@@ -107,10 +106,80 @@ const completeWalletFunding = async (req, res) => {
         message: "Your Wallet has been funded successfully",
     })
 }
+const getWalletBalance = async (req, res) => {
+    const user_id = req.params.user_id
+    try {
+        const getWallet = await getUserWallet(user_id)
+        const walletBalance = getWallet.amount_after
+        return res.json({
+            status: true,
+            balance: walletBalance,
+            message: "wallet balance fetched successfully",
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: "Error fetching wallet balance"
+        })
+    }
+}
+const sendMoney = async (req, res) => {
+    let {amount, phone, user_id} = req.body
+    amount = Number(amount)
+    if (!phone|| !amount )
+        return res.json({
+            status: false,
+            message:  "amount or phone number is required"
+
+        })
+    if( amount >50000){
+        return res.json({
+            status: true,
+            message: "your transfer limit has been exceeded"
+            })
+        }
+        try {
+            const userDetails = await getUserWallet(user_id)
+            const recipientDetails = await getUserWithPhone(phone)
+            if (!recipientDetails){
+                return res.json({
+                    status: false,
+                    message: "user not found"
+                })
+            }
+            if (userDetails.amount_after < amount )
+                return res.json({
+                    status:false,
+                    message: "insufficient balance. Please top-up your wallet"
+                })
+           const debitComments = `you have successfully tranferred ${amount} to ${recipientDetails.surname}${recipientDetails.othernames}`
+            await debit(amount, user_id,debitComments)
+            const creditComments = `your account has been credited with ${amount} from ${userDetails.othernames} ${userDetails.surname}`
+            await credit(amount,recipientDetails.user_id,creditComments)
+                return res.json({
+                    status: true,
+                    message: "Transaction completed successfully",
+                })
+          
+        } catch (error) {
+            return res.json({
+                status: false,
+                message: error.message
+            })
+        }
+}
+const getUserWithPhone = async(phone) => {
+    return  UserModel.findOne({
+        where: {
+                    phone: phone
+                }
+    });
+}
+
 
 const walletBalance = async(fullname, balance, date)=>{
-    const userSurname= await userModel.surname
-    const userOthernames= await userModel.othernames
+    const userSurname= await UserModel.surname
+    const userOthernames= await UserModel.othernames
     fullname =userSurname + userOthernames
     const userBalance = await updateWallet(user_id, initial, after)
     balance = userBalance.amount_after
@@ -125,6 +194,9 @@ module.exports = {
     transaction,
     startWalletFunding,
     completeWalletFunding,
+    getWalletBalance,
+    sendMoney,
     walletBalance
+
 }
 

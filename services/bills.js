@@ -24,10 +24,11 @@ const tokenVariable = async()=> {
     return 
   }
   
-const dataToken = tokenVariable()
-const result= dataToken.data.access_token;
 
-const operatorDetail= async(result)=>{
+
+const operatorDetail = async () => {
+  const dataToken = tokenVariable()
+const result= dataToken.access_token;
 const url = 'https://topups-sandbox.reloadly.com/countries/NG';
 const options = {
   method: 'GET',
@@ -47,8 +48,15 @@ axios(url, options)
 
 
 // in order : MTN=341, 9mobile=340, Airtel=342, Glo=344
+<<<<<<< HEAD
 const rechargeFunc = async( newAmount, phoneNumber, operatorID  )=>{
     const url = 'https://topups-sandbox.reloadly.com/topups';
+=======
+const rechargeFunc = async (newAmount, phoneNumber, operatorID) => {
+  const dataToken = tokenVariable()
+const result= dataToken.access_token;
+    const url = 'https://topups-sandbox.reloadly.com/topups-async';
+>>>>>>> main
     const options = {
       method: 'POST',
       headers: {
@@ -78,8 +86,8 @@ const options = {
   method: 'POST',
   headers: {'Content-Type': 'application/json', Accept: 'application/json'},
   body: JSON.stringify({
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
+    client_id: process.env.CLIENT_ID,
+    client_secret:  process.env.CLIENT_SECRET,
     grant_type: 'client_credentials',
     audience: 'https://utilities-sandbox.reloadly.com'
   })
@@ -93,12 +101,14 @@ axios(url, options)
   return
 
 }
-const utilityToken = utilityBillToken();
-const utilAccessToken= utilityToken.access_token;
+
 
 //BillerDetails
 
-const billerDetails=()=>{
+const billerDetails = () => {
+  const utilityToken = utilityBillToken();
+  const utilAccessToken = utilityToken.access_token;
+  
 const url = 'https://utilities-sandbox.reloadly.com/billers'
 const options = {
   method: 'GET',
@@ -113,7 +123,10 @@ axios(url, options)
   return
 }
 
-const utilityPayment =()=>{
+const buyElectricity = () => {
+  const utilityToken = utilityBillToken();
+  const utilAccessToken = utilityToken.access_token;
+  
   const {amount, billerId, subscriber_account_number} = req.body
 const url = 'https://utilities-sandbox.reloadly.com/pay';
 const options = {

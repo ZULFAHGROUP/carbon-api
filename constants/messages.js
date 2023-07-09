@@ -4,6 +4,8 @@ const messages = {
     userExists: "User with the Phone/Email exists",
     notFoundMessage: "What you seek is beyond this globe",
     invalidOtp :  "Invalid otp"
+ 
+    
 }
 
 module.exports = messages;
