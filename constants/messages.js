@@ -11,6 +11,7 @@ const messages = {
   sendMoneyErrorRecipientDetails: "user not found",
   userWalletDetailsError: "insufficient balance. Please top-up your wallet",
   receipientSuccessmessage: "Transaction completed successfully",
+  sendMoneyToSelfMessage:'you cannot send money to self',
 };
 
 module.exports = messages;
