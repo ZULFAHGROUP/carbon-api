@@ -3,6 +3,7 @@ const UserModel = require('../models/userModels')
 const OtpModel = require('../models/otpModel')
 const WalletModel = require('../models/walletModel')
 const { validateCreateAccount } = require('../validations/userValidations')
+const validateUpdateUser = require('../validations/updateUserValidations')
 const { Op } = require("sequelize");
 const { hashPassword, generateOtp } = require('../utils/helpers')
 const { OtpEnum } = require('../constants/enums')
@@ -208,6 +209,14 @@ const updateUserProfile = async(req, res) => {
         })
     }
     ///use joi to validate the request body
+    const { error } = validateUpdateUser(req.body)
+    if (error !== undefined) {
+        res.status(400).json({
+            status: false,
+            message: error.details[0].message || "Bad request"
+        })
+        return
+    }
     try{
         await UserModel.update(
             req.body, {
@@ -218,7 +227,7 @@ const updateUserProfile = async(req, res) => {
 
             res.status(200).json({
                 status: true,
-                message: "Account updated successfully"
+                message: "user profile updated successfully"
             })
             return
     }catch(error){

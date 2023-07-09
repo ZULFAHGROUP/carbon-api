@@ -27,7 +27,7 @@ const resolveAccount = async(req, res) => {
     const {error} = validateBank(req.query)
     if (error !== undefined) {
         res.status(400).json({
-            status: true,
+            status: false,
             message: error.details[0].message || "Bad request"
         })
         return
@@ -68,7 +68,7 @@ const createAccount = async(req, res) => {
             bank_account_number: bank_account_number,
             account_name: account_name
         })
-        res.status(200).json({
+        res.status(201).json({
             status: true,
             message: "account created successfully"
         })
@@ -96,8 +96,9 @@ const userBankAccounts = async(req,res) => {
                 user_id: user_id
             }
         })
-        res.status(201).json({
+        res.status(200).json({
             status: true,
+            message: "bank accounts retrieved successfully",
             data: bankAccounts
         })
         return
@@ -129,7 +130,7 @@ const deleteBank = async(req,res)=> {
         })
         res.status(200).json({
             status: true,
-            message: "bank deleted successfully"
+            message: "bank account deleted successfully"
         })
         return
     }catch(error){
