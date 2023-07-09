@@ -25,17 +25,19 @@ const tokenVariable = async()=> {
   }
   
 const dataToken = tokenVariable()
-const result= dataToken.access_token;
+const result= dataToken.data.access_token;
 
 const operatorDetail= async(result)=>{
 const url = 'https://topups-sandbox.reloadly.com/countries/NG';
 const options = {
   method: 'GET',
   headers: {
-    Accept: 'application/com.reloadly.topups-v1+json',
+
     Authorization: `Bearer ${result}`
   }
 };
+
+//const operators = operatorDetail.data.content;
 
 axios(url, options)
 	.then(res => console.log(res))
@@ -46,20 +48,18 @@ axios(url, options)
 
 // in order : MTN=341, 9mobile=340, Airtel=342, Glo=344
 const rechargeFunc = async( newAmount, phoneNumber, operatorID  )=>{
-    const url = 'https://topups-sandbox.reloadly.com/topups-async';
+    const url = 'https://topups-sandbox.reloadly.com/topups';
     const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/com.reloadly.topups-v1+json',
         Authorization: `Bearer ${result}`
       },
       body: JSON.stringify({
         operatorId: operatorID,
         amount:  newAmount,
-        useLocalAmount: true,
+        //useLocalAmount: true,
         recipientPhone: {countryCode: 'NG', number: phoneNumber},
-        senderPhone: {countryCode: 'NG', number: '08185296264'}
+       // senderPhone: {countryCode: 'NG', number: '08185296264'}
       })
     };
     
@@ -103,7 +103,6 @@ const url = 'https://utilities-sandbox.reloadly.com/billers'
 const options = {
   method: 'GET',
   headers: {
-    Accept: 'application/com.reloadly.utilities-v1+json',
     Authorization: `Bearer ${utilAccessToken}`
   }
 };
@@ -114,14 +113,12 @@ axios(url, options)
   return
 }
 
-const buyElectricity =()=>{
+const utilityPayment =()=>{
   const {amount, billerId, subscriber_account_number} = req.body
 const url = 'https://utilities-sandbox.reloadly.com/pay';
 const options = {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/com.reloadly.utilities-v1+json',
     Authorization:`Bearer ${utilAccessToken}`
   },
   body: JSON.stringify({
@@ -143,7 +140,8 @@ axios(url, options)
     tokenVariable,
     operatorDetail,
     rechargeFunc,
+    utilityBillToken,
     billerDetails,
-    buyElectricity
+    utilityPayment
   }
 
