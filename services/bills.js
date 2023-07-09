@@ -48,15 +48,10 @@ axios(url, options)
 
 
 // in order : MTN=341, 9mobile=340, Airtel=342, Glo=344
-<<<<<<< HEAD
-const rechargeFunc = async( newAmount, phoneNumber, operatorID  )=>{
-    const url = 'https://topups-sandbox.reloadly.com/topups';
-=======
 const rechargeFunc = async (newAmount, phoneNumber, operatorID) => {
   const dataToken = tokenVariable()
 const result= dataToken.access_token;
     const url = 'https://topups-sandbox.reloadly.com/topups-async';
->>>>>>> main
     const options = {
       method: 'POST',
       headers: {
