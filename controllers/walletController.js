@@ -7,7 +7,13 @@ const {
 } = require("../constants/enums");
 const { v4: uuidv4 } = require("uuid");
 const { startPayment, completePayment } = require("../services/payment");
-const messages = require("../constants/messages");
+const {messages,walletBalanceMessage,
+errorBalancemessage,
+errorSendMoneyMessage ,
+errorSendMoneyMessageLimit,
+sendMoneyErrorRecipientDetails,
+userWalletDetailsError ,
+receipientSuccessmessage} = require("../constants/messages");
 const credit = async (amountPassed, user_id, comments) => {
   const amount = Math.abs(Number(amountPassed));
   const userDetails = await getUserWallet(user_id);
@@ -131,12 +137,12 @@ const getWalletBalance = async (req, res) => {
     return res.json({
       status: true,
       balance: walletBalance,
-      message: "wallet balance fetched successfully",
+      message: walletBalanceMessage,
     });
   } catch (error) {
     res.status(500).json({
       status: false,
-      message: "Error fetching wallet balance",
+      message: errorBalancemessage,
     });
   }
 };
@@ -146,18 +152,18 @@ const sendMoney = async (req, res) => {
   try {
     const minimumWithdrawal = 100;
     if (!phone || !amount || isNaN(amount) || amount <= minimumWithdrawal)
-      throw new Error("invalid amount or phone", 400);
+      throw new Error(errorSendMoneyMessage, 400);
     amount = Math.abs(Number(amount));
     const maximumWithdrawal = 50000;
     if (amount > maximumWithdrawal)
-      throw new Error("your transfer limit has been exceeded", 400);
+      throw new Error(errorSendMoneyMessageLimit, 400);
 
     const userDetails = await getUserDetails(user_id);
     const userWalletDetails = await getUserWallet(user_id);
     const recipientDetails = await getUserWithPhone(phone);
-    if (!recipientDetails) throw new Error("user not found", 400);
+    if (!recipientDetails) throw new Error(sendMoneyErrorRecipientDetails, 400);
     if (userWalletDetails.amount_after < amount)
-      throw new Error("insufficient balance. Please top-up your wallet", 400);
+      throw new Error(userWalletDetailsError, 400);
 
     const receipientUserID = recipientDetails.user_id;
     const debitComments = `you have successfully tranferred ${amount} to ${recipientDetails.surname} ${recipientDetails.othernames}`;
@@ -166,7 +172,7 @@ const sendMoney = async (req, res) => {
     await credit(amount, receipientUserID, creditComments);
     return res.json({
       status: true,
-      message: "Transaction completed successfully",
+      message: receipientSuccessmessage,
     });
   } catch (error) {
     return res.json({
