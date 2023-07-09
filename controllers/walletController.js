@@ -152,7 +152,7 @@ const sendMoney = async (req, res) => {
                     status:false,
                     message: "insufficient balance. Please top-up your wallet"
                 })
-           const debitComments = `you have successfully tranferred ${amount} to ${recipientDetails.surname}${recipientDetails.othernames}`
+           const debitComments = `you have successfully tranferred ${amount} to ${recipientDetails.othernames} ${recipientDetails.surname}`
             await debit(amount, user_id,debitComments)
             const creditComments = `your account has been credited with ${amount} from ${userDetails.othernames} ${userDetails.surname}`
             await credit(amount,recipientDetails.user_id,creditComments)

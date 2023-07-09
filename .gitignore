@@ -1,2 +1,4 @@
 /node_modules
 .env
+/controllers/sendMoney2.js
+/validations/sendMoneyValidation.js
