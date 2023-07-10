@@ -13,7 +13,11 @@ const messages = {
   receipientSuccessmessage: "Transaction completed successfully",
   sendMoneyToSelfMessage:'you cannot send money to self',
   errorFetchingTransactions: "Error fetching transactions from database",
-  transactionLogMessage: "daily transaction logged successfully"
+  dailytransactionLogMessage: "daily transaction logged successfully",
+  weeklytransactionLogMessage: "weekly transaction logged successfully",
+  monthlytransactionLogMessage: "monthly transaction logged successfully"
+  
+  
 };
 
 module.exports = messages;

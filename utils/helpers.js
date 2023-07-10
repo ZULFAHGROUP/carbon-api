@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const moment = require('moment'); // require
 const saltRounds = 10;
 
 const hashPassword = async (password) => { 
@@ -38,19 +39,26 @@ const phoneValidation = (userPhone) => {
         return false
     }
 }
+
+// const getTodaysDate = () => {
+
+//     const today = new Date();
+//     const yyyy = today.getFullYear(); 
+//     let mm = today.getMonth() + 1; 
+//     // Months start at 0!
+//     let dd = today.getDate(); 
+//     if (dd < 10) dd = '0' + dd; 
+//     if (mm < 10) mm = '0' + mm; 
+//     const formattedToday = dd + '-' + mm + '-' + yyyy;
+//     return formattedToday.toString();
+
+// }
+
 const getTodaysDate = () => {
+    const formattedToday = moment().format('YYYY-MM-DD')
+  return formattedToday;
+ }
 
-    const today = new Date();
-    const yyyy = today.getFullYear(); 
-    let mm = today.getMonth() + 1; 
-    // Months start at 0!
-    let dd = today.getDate(); 
-    if (dd < 10) dd = '0' + dd; 
-    if (mm < 10) mm = '0' + mm; 
-    const formattedToday = dd + '-' + mm + '-' + yyyy;
-    return formattedToday;
-
-}
 module.exports = {
     hashPassword,
     generateOtp,

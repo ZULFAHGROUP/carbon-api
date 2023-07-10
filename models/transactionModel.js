@@ -32,6 +32,10 @@ const Transaction = sequelize.define('transaction', {
         values: ['pending', 'completed', 'failed'],
         allowNull: false,
         defaultValue: 'pending'
+    },
+    createdAt: {
+        field: 'createdAt',
+        type: Sequelize.DATEONLY
     }
 })
 Transaction.removeAttribute(['id'])

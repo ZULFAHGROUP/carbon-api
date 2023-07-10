@@ -69,7 +69,7 @@ const createUser = async (req, res) => {
         })
 
         //give them 1000 on signup
-        credit(200, userID, `Wallet funding for signup credits`)
+        credit(700, userID, `Wallet funding for signup credits`)
 
         const _otp = generateOtp(6)
         const dataToInsert = {

@@ -1,8 +1,10 @@
 const { Op } = require("sequelize");
+const moment = require('moment'); // require
 const transactionModel = require("../models/transactionModel");
 const { TransactionTypeEnum } = require("../constants/enums");
 const {getTodaysDate} = require('../utils/helpers')
-const {errorFetchingTransactions, transactionLogMessage} = require("../constants/messages");
+const {errorFetchingTransactions, dailytransactionLogMessage,
+   weeklytransactionLogMessage,monthlytransactionLogMessage} = require("../constants/messages");
 const getTransactions = async (req, res) => {
   try {
     const { page } = req.query;
@@ -28,6 +30,8 @@ const getTransactions = async (req, res) => {
     });
   }
 };
+
+
 
 const filterTransactionsWithDate = async (req, res) => {
   try {
@@ -153,38 +157,45 @@ const transactionSum = (array)=>{
    return sumWithInitial
 }
 
+const getTrasactionAmountFromDB = async (user_id, dateDuration, transaction_type) => {
+
+   const transactions = await transactionModel.findAll({
+      attributes: [ "amount" ],
+      where: {
+        user_id: user_id,
+        createdAt: {
+          [Op.between]: dateDuration
+        },
+        transaction_type: transaction_type
+      }
+
+    });
+
+    return transactions;
+  }
+
+    
+
 const dailyTransaction = async (req, res) => {
    const { user_id } = req.body;
 
    try{
-   
-    const todayDate = getTodaysDate();
-    const userCreditTransactionsFromDB = await transactionModel.findAll({
-      attributes: [ "amount" ],
-      where: {
-        user_id: user_id,
-        createdAt: todayDate,
-        transaction_type: TransactionTypeEnum.CREDIT
-      }
-      
-    });
 
-    const userDebitTransactionsFromDB = await transactionModel.findAll({
-          attributes: [ "amount" ],
-          where: {
-            user_id: user_id,
-            createdAt: todayDate,
-            transaction_type: TransactionTypeEnum.DEBIT
-          }
-          
-        });
+    const todayDate = [getTodaysDate()];
+    console.log(todayDate);
+    
+    const userCreditTransactions = await getTrasactionAmountFromDB (user_id, todayDate, TransactionTypeEnum.CREDIT);
+    console.log(`useerCredits here:  ${userCreditTransactions}`);
+
+    const userDebitTransactions =await getTrasactionAmountFromDB(user_id, todayDate, TransactionTypeEnum.DEBIT);
+    
          //[{ amount: 100 }, { amount: 200}, { amount: 300}]
 
-    if (!userCreditTransactionsFromDB ||!userDebitTransactionsFromDB ) throw new Error(errorFetchingTransactions, 400);
+    if (!userCreditTransactions ||!userDebitTransactions ) throw new Error(errorFetchingTransactions, 400);
    
-    const creditTransactions = await transactionSum(userCreditTransactionsFromDB);
+    const creditTransactions = await transactionSum(userCreditTransactions);
 
-    const debitTransactions = await transactionSum(userDebitTransactionsFromDB);
+    const debitTransactions = await transactionSum(userDebitTransactions);
 
     const totalTransactions = creditTransactions + debitTransactions;
 
@@ -193,7 +204,7 @@ const dailyTransaction = async (req, res) => {
     totalCreditAmount: creditTransactions,
     totalDebitAmount: debitTransactions,
     totalTransactionAmount: totalTransactions,
-    message: transactionLogMessage,
+    message: dailytransactionLogMessage,
   });
 
 } catch (error) {
@@ -206,28 +217,95 @@ const dailyTransaction = async (req, res) => {
   
   };
 
-const weeklyTransaction = (req, res) => {
-  const { transactionType } = req.query;
+const weeklyTransaction = async (req, res) => {
   const { user_id } = req.body;
 
-  res.json({
+   try{
+
+    const todayDate = getTodaysDate()
+    const weeklyDate = moment().add(-7, 'days').format('YYYY-MM-DD');
+    const dateRange = [weeklyDate, todayDate];
+    console.log(`weeklydate herrreee: ${weeklyDate}`);
+    console.log(`todaydate herrreee: ${todayDate}`);
+    
+    const userCreditTransactions = await getTrasactionAmountFromDB (user_id, dateRange, TransactionTypeEnum.CREDIT);
+    console.log(`weekly useerCredits here:  ${userCreditTransactions}`);
+
+    const userDebitTransactions =await getTrasactionAmountFromDB(user_id, dateRange, TransactionTypeEnum.DEBIT);
+    
+         //[{ amount: 100 }, { amount: 200}, { amount: 300}]
+
+    if (!userCreditTransactions ||!userDebitTransactions ) throw new Error(errorFetchingTransactions, 400);
+   
+    const creditTransactions = await transactionSum(userCreditTransactions);
+
+    const debitTransactions = await transactionSum(userDebitTransactions);
+
+    const totalTransactions = creditTransactions + debitTransactions;
+
+  res.status(200).json({
     status: true,
-    credit: creditTransactions,
-    debit: debitTransactions,
-    message: "daily transaction logged successfully",
+    totalCreditAmount: creditTransactions,
+    totalDebitAmount: debitTransactions,
+    totalTransactionAmount: totalTransactions,
+    message: weeklytransactionLogMessage,
   });
+
+} catch (error) {
+  
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+   }
 };
+
 const monthlyTransaction = async (req, res) => {
-  const { transactionType } = req.query;
   const { user_id } = req.body;
 
-  res.json({
+   try{
+
+    const todayDate = getTodaysDate()
+    const monthlylyDate = moment().add(-1, 'months').format('YYYY-MM-DD');
+    const dateRange = [monthlylyDate, todayDate];
+    console.log(`weeklydate herrreee: ${todayDate}`);
+    console.log(`Montlydate herrreee: ${monthlylyDate}`);
+    
+    const userCreditTransactions = await getTrasactionAmountFromDB (user_id, dateRange, TransactionTypeEnum.CREDIT);
+    console.log(`weekly useerCredits here:  ${userCreditTransactions}`);
+
+    const userDebitTransactions =await getTrasactionAmountFromDB(user_id, dateRange, TransactionTypeEnum.DEBIT);
+    
+         //[{ amount: 100 }, { amount: 200}, { amount: 300}]
+
+    if (!userCreditTransactions ||!userDebitTransactions ) throw new Error(errorFetchingTransactions, 400);
+   
+    const creditTransactions = await transactionSum(userCreditTransactions);
+
+    const debitTransactions = await transactionSum(userDebitTransactions);
+
+    const totalTransactions = creditTransactions + debitTransactions;
+
+  res.status(200).json({
     status: true,
-    credit: creditTransactions,
-    debit: debitTransactions,
-    message: "daily transaction logged successfully",
+    totalCreditAmount: creditTransactions,
+    totalDebitAmount: debitTransactions,
+    totalTransactionAmount: totalTransactions,
+    message: monthlytransactionLogMessage
   });
+
+} catch (error) {
+  
+    res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+   }
 };
+
+
+
+
 const getUserTransaction = (user_id) => {
   return transactionModel.findAll({
     where: {
@@ -242,5 +320,5 @@ module.exports = {
   filterTransactionsWithDate,
   dailyTransaction,
   weeklyTransaction,
-  monthlyTransaction,
+  monthlyTransaction
 };
