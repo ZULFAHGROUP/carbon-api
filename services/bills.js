@@ -126,7 +126,7 @@ res.status(200).json({
 
   try {
     
-       const utilityPayment = await axios.post(`https://utilities-sandbox.reloadly.com/pay`, {
+       const utilityFunc = await axios.post(`https://utilities-sandbox.reloadly.com/pay`, {
         billerId,
         amount,
         subscriberAccountNumber,
@@ -143,6 +143,8 @@ res.status(200).json({
         message: "An error occurred while processing your bill payment"
       });
     } 
+
+    
   module.exports = {
     tokenVariable,
     operatorDetail,
@@ -150,6 +152,6 @@ res.status(200).json({
     rechargeFunc,
     utilityBillToken,
     billerDetails,
-    utilityPayment
+    utilityFunc
   }
 
