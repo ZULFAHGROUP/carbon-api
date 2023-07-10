@@ -181,15 +181,13 @@ const dailyTransaction = async (req, res) => {
 
    try{
 
-    const todayDate = [getTodaysDate()];
-    console.log(todayDate);
+    const todayDate = [getTodaysDate(), getTodaysDate()];
+    console.log(`today's date here: ${todayDate}`);
     
     const userCreditTransactions = await getTrasactionAmountFromDB (user_id, todayDate, TransactionTypeEnum.CREDIT);
-    console.log(`useerCredits here:  ${userCreditTransactions}`);
-
     const userDebitTransactions =await getTrasactionAmountFromDB(user_id, todayDate, TransactionTypeEnum.DEBIT);
-    
-         //[{ amount: 100 }, { amount: 200}, { amount: 300}]
+     
+    //[{ amount: 100 }, { amount: 200}, { amount: 300}]
 
     if (!userCreditTransactions ||!userDebitTransactions ) throw new Error(errorFetchingTransactions, 400);
    
@@ -197,13 +195,13 @@ const dailyTransaction = async (req, res) => {
 
     const debitTransactions = await transactionSum(userDebitTransactions);
 
-    const totalTransactions = creditTransactions + debitTransactions;
+    const totalTransactions = Number(creditTransactions + debitTransactions);
 
   res.status(200).json({
     status: true,
-    totalCreditAmount: creditTransactions,
-    totalDebitAmount: debitTransactions,
-    totalTransactionAmount: totalTransactions,
+    totalDailyCreditAmount: creditTransactions,
+    totalDailyDebitAmount: debitTransactions,
+    totalDailyTransactionAmount: totalTransactions,
     message: dailytransactionLogMessage,
   });
 
@@ -223,13 +221,13 @@ const weeklyTransaction = async (req, res) => {
    try{
 
     const todayDate = getTodaysDate()
-    const weeklyDate = moment().add(-7, 'days').format('YYYY-MM-DD');
+    const weeklyDate = moment().subtract(7, 'days').format('YYYY-MM-DD');
     const dateRange = [weeklyDate, todayDate];
-    console.log(`weeklydate herrreee: ${weeklyDate}`);
-    console.log(`todaydate herrreee: ${todayDate}`);
+    console.log(`weeklydate here: ${weeklyDate}`);
+    console.log(`todaydate heree: ${todayDate}`);
     
     const userCreditTransactions = await getTrasactionAmountFromDB (user_id, dateRange, TransactionTypeEnum.CREDIT);
-    console.log(`weekly useerCredits here:  ${userCreditTransactions}`);
+    console.log(`weekly userCredits here:  ${userCreditTransactions}`);
 
     const userDebitTransactions =await getTrasactionAmountFromDB(user_id, dateRange, TransactionTypeEnum.DEBIT);
     
@@ -241,13 +239,13 @@ const weeklyTransaction = async (req, res) => {
 
     const debitTransactions = await transactionSum(userDebitTransactions);
 
-    const totalTransactions = creditTransactions + debitTransactions;
+    const totalTransactions = Number(creditTransactions + debitTransactions);
 
   res.status(200).json({
     status: true,
-    totalCreditAmount: creditTransactions,
-    totalDebitAmount: debitTransactions,
-    totalTransactionAmount: totalTransactions,
+    totalWeeklyCreditAmount: creditTransactions,
+    totalWeeklyDebitAmount: debitTransactions,
+    totalWeeklyTransactionAmount: totalTransactions,
     message: weeklytransactionLogMessage,
   });
 
@@ -266,13 +264,13 @@ const monthlyTransaction = async (req, res) => {
    try{
 
     const todayDate = getTodaysDate()
-    const monthlylyDate = moment().add(-1, 'months').format('YYYY-MM-DD');
+    const monthlylyDate = moment().subtract(1, 'months').format('YYYY-MM-DD');
     const dateRange = [monthlylyDate, todayDate];
-    console.log(`weeklydate herrreee: ${todayDate}`);
-    console.log(`Montlydate herrreee: ${monthlylyDate}`);
+    console.log(`today's date here: ${todayDate}`);
+    console.log(`Monthlydate here: ${monthlylyDate}`);
     
     const userCreditTransactions = await getTrasactionAmountFromDB (user_id, dateRange, TransactionTypeEnum.CREDIT);
-    console.log(`weekly useerCredits here:  ${userCreditTransactions}`);
+    console.log(`monthly userCredits here:  ${userCreditTransactions}`);
 
     const userDebitTransactions =await getTrasactionAmountFromDB(user_id, dateRange, TransactionTypeEnum.DEBIT);
     
@@ -284,13 +282,13 @@ const monthlyTransaction = async (req, res) => {
 
     const debitTransactions = await transactionSum(userDebitTransactions);
 
-    const totalTransactions = creditTransactions + debitTransactions;
+    const totalTransactions = Number(creditTransactions + debitTransactions);
 
   res.status(200).json({
     status: true,
-    totalCreditAmount: creditTransactions,
-    totalDebitAmount: debitTransactions,
-    totalTransactionAmount: totalTransactions,
+    totalMonthlyCreditAmount: creditTransactions,
+    totalMonthlyDebitAmount: debitTransactions,
+    totalMonthlyTransactionAmount: totalTransactions,
     message: monthlytransactionLogMessage
   });
 
