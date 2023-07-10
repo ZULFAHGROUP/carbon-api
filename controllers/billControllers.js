@@ -1,37 +1,26 @@
 
 const {walletBalance, transaction} = require('./walletController')
 const { v4: uuidv4 } = require('uuid');
-
+const { phoneValidation } = require('../utils/helpers')
 const BillModel = require('../models/billModel')
+const {utilityFunc} = require('../services/bills')
 
 // Function to purchase a utility bill
-// utility billerId for some Nigerian Electricity Disco brands
-// order : Eko id=3, Ikeja id= 5, Abuja=6, Ibadan=8
-const utilityFunc =async(request, result)=>{
-    const { amount, billerId, subscriberAccountNumber } = await request.body
-    if (!amount || !billerId || !subscriberAccountNumber || !phoneNumber) { 
-        res.status(400).json({
-            status: false,
-            message: "All fields are required"
-        })
-        return
-    }
+
+const utilityPayment =async(req, res)=>{
+try{
+    let { amount, billerId, subscriberAccountNumber } = request.body
+
+    const { user_id } = req.params
+
+    phoneNumber = phoneValidation(phoneNumber)  
+    if (phoneNumber === false) throw new Error('Invalid phone number', 400);
+
+    if (!amount || !billerId || !subscriberAccountNumber) throw new Error('All fields are required', 400)
 
     const checkWallet = await walletBalance.balance
-    if(checkWallet < amount){
-        res.status(400).json({
-            status: false,
-            message:"Insufficient balance"
-        })
-    }
+    if(checkWallet < amount) throw new Error('Insufficient balance', 400)
 
-    if(phoneNumber.length<11){
-        res.status(400).json({
-            status: false,
-            message:"Incorrect number",
-            
-        })
-    }
     const userID= await transaction(user_id);
     const newWalletBalance = checkWallet - amount;
     const id = uuidv4
@@ -46,40 +35,43 @@ const utilityFunc =async(request, result)=>{
         utility_date: Date.now(),
     
     })
+
+     // To call the reloadly API function for the payment of utilities
+     utilityFunc(amount, billerId, subscriberAccountNumber)
+     res.status(200).json({
+         status: true,
+         message: "Your utility payment has been received",
+     })
+ 
+     sendSms(phoneNumber, `${subscriberAccountNumber} ${amount} has been paid to ${billerId}`)
+
+    } catch(err){
+
+        res.status(500).json({
+            status: false,
+            message: err.message
+        })
+}  
+}
+
+if(utilityFunc.data.finalStatusAvailabilityAt){
     res.status(200).json({
         status: true,
         message: "The bill data is saved",
     })
-
-    if(result.finalStatusAvailabilityAt){
-
-        res.status(200).json({
-            status: true,
-            message: "The bill data is saved",
-        })
-    }
-
-
-
 }
-
 
 const BillLog =async ()=>{
     await BillHistory.create({
         biller_id: billerId,
         bill_amount:amount,
         utility_date: Date.now(),
-    
     })
-   
 }
 
-
-
 module.exports ={
-    utilityFunc,
+    utilityPayment,
     BillLog
-
 }
 
 

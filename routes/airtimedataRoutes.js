@@ -7,7 +7,7 @@ router.post('/airtime-top-up', airtime)
 
 router.post('/data-top-up', data)
 
-
+router.get('/operators')
 
 
 module.exports = router
