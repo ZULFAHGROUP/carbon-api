@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const transactionModel = require("../models/transactionModel");
-const { transactionTypeEnum } = require("../constants/enums");
+const { TransactionTypeEnum } = require("../constants/enums");
 const {getTodaysDate} = require('../utils/helpers')
 const {errorFetchingTransactions, transactionLogMessage} = require("../constants/messages");
 const getTransactions = async (req, res) => {
@@ -164,7 +164,7 @@ const dailyTransaction = async (req, res) => {
       where: {
         user_id: user_id,
         createdAt: todayDate,
-        transaction_type: transactionTypeEnum.CREDIT
+        transaction_type: TransactionTypeEnum.CREDIT
       }
       
     });
@@ -174,7 +174,7 @@ const dailyTransaction = async (req, res) => {
           where: {
             user_id: user_id,
             createdAt: todayDate,
-            transaction_type: transactionTypeEnum.DEBIT
+            transaction_type: TransactionTypeEnum.DEBIT
           }
           
         });
@@ -188,7 +188,7 @@ const dailyTransaction = async (req, res) => {
 
     const totalTransactions = creditTransactions + debitTransactions;
 
-  res.satus(200).json({
+  res.status(200).json({
     status: true,
     totalCreditAmount: creditTransactions,
     totalDebitAmount: debitTransactions,
