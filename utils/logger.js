@@ -1,29 +1,20 @@
+const loggerModel = require("../models/loggerModel");
 
-const loggerModel = require('../models/loggerModel')
-
-
-
-    
-const logger = async (data)=> {
-    try {
-const {message, status, user_id, email} = data
-
+const logger = async (email, status, message) => {
+  try {
     //validation
-    if(!message|| !status || (!user_id && !email)){
-        console.log("supply all required info")
-         throw new Error ("supply all required info")
-         //return "supply all required info"
+    if (!message || !status || !email) {
+      throw new Error("supply all required info");
     }
-    
-    await loggerModel.create(data)
-    console.log("logged succesfully")
-    return
-}catch (error) {
-    console.log(error);
-}
-}
 
+    await loggerModel.create({
+      email,
+      message,
+      status,
+    });
 
-module.exports = logger
+    return;
+  } catch (error) {}
+};
 
-
+module.exports = logger;

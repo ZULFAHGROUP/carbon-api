@@ -9,7 +9,7 @@ const airtimedataRoutes = require('./routes/airtimedataRoutes')
 const  walletRoutes  = require('./routes/walletRoutes')
 
 const CardRoutes = require('./routes/cardRoutes')
-
+const loggerRoutes = require('./routes/loggerRoutes')
 const complainRoute = require('./routes/complainLogRoute');
 const transactionRoute = require('./routes/getTransactionRoute');
 const faqRoute = require('./routes/faqRoute');
@@ -34,6 +34,8 @@ app.use('/api/v1/bank', bankRoutes)
 app.use('/api/v1/airtimedata', airtimedataRoutes)
 
 app.use('/api/v1/card', CardRoutes)
+app.use('/api/v1/activity', loggerRoutes)
+
 
 // app.use('/api/v1/bill', billRoutes)
 // app.use('/api/v1/billhistory', BillHistoryRoute)
