@@ -2,156 +2,156 @@ require('dotenv').config()
 const axios = require('axios')
 
 
-const tokenVariable = async()=> {
-    const resp = await axios(
-      `https://auth.reloadly.com/oauth/token`,
+let result;
+let utilResult;
+
+
+try{
+  const tokenVariable = await axios.post(`https://auth.reloadly.com/oauth/token`,
+    {
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        grant_type: 'client_credentials',
+        audience: 'https://topups-sandbox.reloadly.com'
+    });
+
+ result = tokenVariable.data.access_token;
+
+const operatorDetail = await axios.get('https://topups-sandbox.reloadly.com/countries/NG', {
+  headers: {
+      Authorization: `Bearer ${result}`
+    }
+})
+
+
+// Extract the operator list from the response
+const operators = operatorDetail.data.content;
+
+res.status(200).json({
+  status: true,
+  message: "This is the list of the operators",
+  operators
+}) 
+}catch (error) {
+  console.error(error);
+  res.status(500).json({
+    status: false,
+    message: "Error occurred while retrieving the operators"
+  });
+};
+
+try{
+                
+  const dataOperatorsDetail = await axios.get('https://topups-sandbox.reloadly.com/operators/countries/NG?includeData=true', {
+      headers: {
+          Authorization: `Bearer ${result}`
+        }
+  })
+  
+
+   // Extract the data operator list from the response
+   const dataOperators = dataOperatorsDetail.data;
+  
+   res.status(200).json({
+      status: true,
+      message: "This is the list of the operators",
+      dataOperators
+    }) 
+    }catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: "Error occurred while retrieving the operators"
+      });
+    }
+
+    // to topup for airtime or data
+try{
+  const rechargeFunc = await axios.post(`https://topups.reloadly.com/topups`, {
+      operatorId: operatorID,
+      recipientPhone: phoneNumber,
+      amount: newAmount
+    }, {
+      headers: {
+        Authorization: `Bearer ${result}`
+      }
+    });
+  
+   }catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: "Error occurred while processing the purchase of airtime"
+      });
+    }
+
+
+
+// accessing utility bearer token
+try{
+    const utilAccessToken = await axios.post(`https://auth.reloadly.com/oauth/token`,
       {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
           client_id: process.env.CLIENT_ID,
           client_secret: process.env.CLIENT_SECRET,
           grant_type: 'client_credentials',
-          audience: 'https://topups-sandbox.reloadly.com'
-        })
+          audience: 'https://utilities-sandbox.reloadly.com'
+      });
+  
+utilResult = utilAccessToken.data.access_token;
+
+const billerDetails = await axios.get('https://utilities-sandbox.reloadly.com/billers', {
+    headers: {
+        Authorization: `Bearer ${utilResult}`
       }
-    );
-  
-    const data = await resp.json();
-    console.log(data);
-    return 
-  }
-  
+})
 
+// Extract the billers list from the response
+const utilitiesBillers = billerDetails.content;
 
-const operatorDetail = async () => {
-  const dataToken = tokenVariable()
-const result= dataToken.access_token;
-const url = 'https://topups-sandbox.reloadly.com/countries/NG';
-const options = {
-  method: 'GET',
-  headers: {
-    Accept: 'application/com.reloadly.topups-v1+json',
-    Authorization: `Bearer ${result}`
-  }
-};
+res.status(200).json({
+    status: true,
+    message: "This is the list of all the utility billers",
+    utilitiesBillers
+  }) 
 
-axios(url, options)
-	.then(res => console.log(res))
-	.catch(err => console.error('error:' + err));
+}catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: "Error occurred while retrieving the billers"
+    });
+  };
 
-}
+  // to pay for utilities
 
-
-// in order : MTN=341, 9mobile=340, Airtel=342, Glo=344
-const rechargeFunc = async (newAmount, phoneNumber, operatorID) => {
-  const dataToken = tokenVariable()
-const result= dataToken.access_token;
-    const url = 'https://topups-sandbox.reloadly.com/topups-async';
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/com.reloadly.topups-v1+json',
-        Authorization: `Bearer ${result}`
-      },
-      body: JSON.stringify({
-        operatorId: operatorID,
-        amount:  newAmount,
-        useLocalAmount: true,
-        recipientPhone: {countryCode: 'NG', number: phoneNumber},
-        senderPhone: {countryCode: 'NG', number: '08185296264'}
-      })
-    };
+  try {
     
-    axios(url, options)
-        .then(res => res.json())
-        .catch(err => console.error('error:' + err));
-        return
-    }
+       const utilityFunc = await axios.post(`https://utilities-sandbox.reloadly.com/pay`, {
+        billerId,
+        amount,
+        subscriberAccountNumber,
+        useLocalAmount: false,
+      }, {
+        headers: {
+          Authorization: `Bearer ${utilResult}`
+        }
+      });
+    }catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: "An error occurred while processing your bill payment"
+      });
+    } 
+
     
-    
-// accessing utility bearer token
-    
-const utilityBillToken=()=>{
-const url = 'https://auth.reloadly.com/oauth/token';
-const options = {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json', Accept: 'application/json'},
-  body: JSON.stringify({
-    client_id: process.env.CLIENT_ID,
-    client_secret:  process.env.CLIENT_SECRET,
-    grant_type: 'client_credentials',
-    audience: 'https://utilities-sandbox.reloadly.com'
-  })
-
-};
-
-axios(url, options)
-	.then(res => res.json())
-	.catch(err => console.error('error:' + err));
-
-  return
-
-}
-
-
-//BillerDetails
-
-const billerDetails = () => {
-  const utilityToken = utilityBillToken();
-  const utilAccessToken = utilityToken.access_token;
-  
-const url = 'https://utilities-sandbox.reloadly.com/billers'
-const options = {
-  method: 'GET',
-  headers: {
-    Accept: 'application/com.reloadly.utilities-v1+json',
-    Authorization: `Bearer ${utilAccessToken}`
-  }
-};
-
-axios(url, options)
-	.then(res => res.json())
-	.catch(err => console.error('error:' + err));
-  return
-}
-
-const buyElectricity = () => {
-  const utilityToken = utilityBillToken();
-  const utilAccessToken = utilityToken.access_token;
-  
-  const {amount, billerId, subscriber_account_number} = req.body
-const url = 'https://utilities-sandbox.reloadly.com/pay';
-const options = {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/com.reloadly.utilities-v1+json',
-    Authorization:`Bearer ${utilAccessToken}`
-  },
-  body: JSON.stringify({
-    subscriberAccountNumber: subscriber_account_number,
-    amount: amount,
-    amountId: null,
-    billerId: billerId,
-    useLocalAmount: null,
-    additionalInfo: {invoiceId: null}
-  })
-};
-
-axios(url, options)
-	.then(res => res.json())
-	.catch(err => console.error('error:' + err));
-
-}
   module.exports = {
     tokenVariable,
     operatorDetail,
+    dataOperatorsDetail,
     rechargeFunc,
+    utilityBillToken,
     billerDetails,
-    buyElectricity
+    utilityFunc
   }
 
