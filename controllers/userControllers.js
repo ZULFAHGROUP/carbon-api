@@ -2,6 +2,7 @@ const { registerMessage, userExists, loginMessage, invalidOtp } = require('../co
 const UserModel = require('../models/userModels')
 const OtpModel = require('../models/otpModel')
 const WalletModel = require('../models/walletModel')
+const jwt = require('jsonwebtoken')
 const { validateCreateAccount } = require('../validations/userValidations')
 const validateUpdateUser = require('../validations/updateUserValidations')
 const { Op } = require("sequelize");
@@ -164,8 +165,8 @@ const verifyUserAccount = async (req, res) => {
 }
 
 const getUserDetails = async(req, res) => {
-    const { user_id } = req.params
-    if (!user_id) { 
+    const { user } = req.params
+    if (!user) { 
         res.status(400).json({
             status: false,
             message: "Bad request"
@@ -173,22 +174,22 @@ const getUserDetails = async(req, res) => {
         return
     }
    try{
-    const user = await UserModel.findOne({
+    const userDetails = await UserModel.findOne({
         attributes: ['othernames','surname','email', 'dob', 'marital_status', 'gender', 'phone'],
         where: { 
-            user_id: user_id
+            user_id: user
         }
     })
-    if (!user) { 
+    if (!userDetails) { 
             res.status(400).json({
             status: false,
             message: "User not found"
-            })
+        })
             return
     }
     res.status(200).json({
         status: true,
-        data: user
+        data: userDetails
     })
     return
    }catch(error){
@@ -201,8 +202,8 @@ const getUserDetails = async(req, res) => {
 
 
 const updateUserProfile = async(req, res) => {
-    const {user_id} = req.params
-    if(!user_id){
+    const {user} = req.params
+    if(!user){
         return res.status(400).json({
             status: false,
             message: "bad request"
@@ -221,7 +222,7 @@ const updateUserProfile = async(req, res) => {
         await UserModel.update(
             req.body, {
                 where: {
-                    user_id: user_id
+                    user_id: user
                 }
             })
 
@@ -246,6 +247,7 @@ const userLogin = async(req, res) => {
         if (!email || !password) throw new Error("All fields are required")
         const checkIfUserExists = await UserModel.findOne({ where: { email: email } })
         if (checkIfUserExists == null) throw new Error("Invalid email or password")
+        
         let payload
         let accessToken
 
@@ -254,7 +256,7 @@ const userLogin = async(req, res) => {
 			_id: uuidv4(),
 		}
 
-		const compareHash = await bcrypt.compare(password, checkIfUserExists.password_hash)
+		const compareHash = await comparePassword(password, checkIfUserExists.password_hash)
         if (!compareHash) throw new Error("Invalid email or password")
         if (!checkIfUserExists.isOtpVerified) throw new Error("Account not verified")
         const token = await jwt.sign(dataToaddInMyPayload, process.env.JWT_SECRET, { expiresIn: '1d' })

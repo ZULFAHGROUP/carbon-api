@@ -5,7 +5,7 @@ const validateUpdateUser = (data) => {
     const updateUserSchema = joi.object({
         surname: joi.string(),
         othernames: joi.string(),
-        dob: joi.date().string(),
+        dob: joi.string(),
         gender: joi.string(),
         address_number: joi.string(),
         address_street: joi.string(),
