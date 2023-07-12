@@ -5,7 +5,7 @@ const WalletModel = require('../models/walletModel')
 const { validateCreateAccount } = require('../validations/userValidations')
 const validateUpdateUser = require('../validations/updateUserValidations')
 const { Op } = require("sequelize");
-const { hashPassword, generateOtp } = require('../utils/helpers')
+const { hashPassword, generateOtp, comparePassword } = require('../utils/helpers')
 const { OtpEnum } = require('../constants/enums')
 const { v4: uuidv4 } = require('uuid');
 const { sendSms } = require('../services/sms')
@@ -238,12 +238,42 @@ const updateUserProfile = async(req, res) => {
     }
 }
 
-const userLogin = () => {
+const userLogin = async(req, res) => {
     //login user
+    const { email, password } = req.body
+    try {
+   
+        if (!email || !password) throw new Error("All fields are required")
+        const checkIfUserExists = await UserModel.findOne({ where: { email: email } })
+        if (checkIfUserExists == null) throw new Error("Invalid email or password")
+        let payload
+        let accessToken
+
+        const dataToaddInMyPayload = {
+			email: checkIfUserExists.email,
+			_id: uuidv4(),
+		}
+
+		const compareHash = await bcrypt.compare(password, checkIfUserExists.password_hash)
+        if (!compareHash) throw new Error("Invalid email or password")
+        if (!checkIfUserExists.isOtpVerified) throw new Error("Account not verified")
+        const token = await jwt.sign(dataToaddInMyPayload, process.env.JWT_SECRET, { expiresIn: '1d' })
+
     res.status(200).json({
         status: true,
-        message: loginMessage
+        message: loginMessage,
+        token: token
+
     })
+    } catch (error) {
+        res.status(400).json({
+            status: false,
+            message:  error.message || "Internal server error"
+        })
+        
+    }
+   
+	
 }
 
 

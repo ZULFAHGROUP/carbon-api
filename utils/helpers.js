@@ -11,6 +11,12 @@ const hashPassword = async (password) => {
   });
 };
 
+const comparePassword = async (password, hashPassword) => {
+  return new Promise((resolve, reject) => {
+    return  bcrypt.compare(password, user.passwordHash);
+  });
+};
+
 const generateOtp = (num) => {
   if (num < 2) {
     return Math.floor(1000 + Math.random() * 9000);
@@ -37,6 +43,7 @@ const phoneValidation = (userPhone) => {
 
 module.exports = {
   hashPassword,
+  comparePassword,
   generateOtp,
   phoneValidation,
 };

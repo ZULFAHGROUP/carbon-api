@@ -19,7 +19,9 @@ const debit = async(amountPassed, user_id, comments) => {
     const amount = Math.abs(Number(amountPassed))
     const userDetails = await getUserWallet(user_id)
     const initialbalance = Number(userDetails.amount_after)
-    if(initialbalance < amount) return false
+    if (initialbalance < amount) {
+        return [false, "Insufficient balance"]
+    } 
     const newbalance = initialbalance - amount  //amount_after
     await updateWallet(user_id, initialbalance, newbalance)
     transaction(TransactionTypeEnum.DEBIT,comments, amount, userDetails.user_id, TransactionStatusEnum.SUCCESS)

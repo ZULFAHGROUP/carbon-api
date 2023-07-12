@@ -9,8 +9,7 @@ const {utilityFunc} = require('../services/bills')
 
 const utilityPayment =async(req, res)=>{
 try{
-    let { amount, billerId, subscriberAccountNumber } = request.body
-
+    let { amount,phoneNumber, billerId, subscriberAccountNumber } = req.body
     const { user_id } = req.params
 
     phoneNumber = phoneValidation(phoneNumber)  
@@ -18,11 +17,11 @@ try{
 
     if (!amount || !billerId || !subscriberAccountNumber) throw new Error('All fields are required', 400)
 
-    const checkWallet = await walletBalance.balance
-    if(checkWallet < amount) throw new Error('Insufficient balance', 400)
+    const getWalletBalance = await walletBalance.balance
+    if(getWalletBalance < amount) throw new Error('Insufficient balance', 400)
 
     const userID= await transaction(user_id);
-    const newWalletBalance = checkWallet - amount;
+    const newWalletBalance = getWalletBalance - amount;
     const id = uuidv4
     await BillModel.create({
         bill_id: id,
@@ -54,12 +53,12 @@ try{
 }  
 }
 
-if(utilityFunc.data.finalStatusAvailabilityAt){
-    res.status(200).json({
-        status: true,
-        message: "The bill data is saved",
-    })
-}
+// if(utilityFunc.data.finalStatusAvailabilityAt){
+//     res.status(200).json({
+//         status: true,
+//         message: "The bill data is saved",
+//     })
+// }
 
 const BillLog =async ()=>{
     await BillHistory.create({

@@ -7,10 +7,6 @@ const displayRoutes = require('express-routemap');
 const userRoutes = require('./routes/userRoutes')
 const airtimedataRoutes = require('./routes/airtimedataRoutes')
 const  walletRoutes  = require('./routes/walletRoutes')
-<<<<<<< HEAD
-const  billRoutes  = require('./routes/billRoutes')
-=======
-
 const CardRoutes = require('./routes/cardRoutes')
 const loggerRoutes = require('./routes/loggerRoutes')
 const complainRoute = require('./routes/complainLogRoute');
@@ -22,7 +18,6 @@ const bankRoutes = require('./routes/bankRoutes')
 
 const  billRoutes  = require('./routes/billRoutes')
 
->>>>>>> main
 const { notFoundMessage } = require('./constants/messages')
 const sequelize = require('./config/db')
 const transactionRoutes = require('./routes/transactionRoutes')
@@ -36,10 +31,6 @@ app.use('/api/v1/faq', faqRoute);
 app.use('/api/v1/transaction', transactionRoutes)
 app.use('/api/v1/bank', bankRoutes)
 app.use('/api/v1/airtimedata', airtimedataRoutes)
-<<<<<<< HEAD
-app.use('/api/v1/bill', billRoutes)
-=======
-
 app.use('/api/v1/card', CardRoutes)
 app.use('/api/v1/activity', loggerRoutes)
 
@@ -47,7 +38,6 @@ app.use('/api/v1/activity', loggerRoutes)
 // app.use('/api/v1/bill', billRoutes)
 // app.use('/api/v1/billhistory', BillHistoryRoute)
 
->>>>>>> main
 
 
 
