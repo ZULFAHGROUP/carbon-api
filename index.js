@@ -1,6 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const port = process.env.PORT
 const displayRoutes = require('express-routemap');
@@ -13,7 +14,7 @@ const complainRoute = require('./routes/complainLogRoute');
 const transactionRoute = require('./routes/getTransactionRoute');
 const faqRoute = require('./routes/faqRoute');
 
-
+app.use(cors())
 const bankRoutes = require('./routes/bankRoutes')
 
 const  billRoutes  = require('./routes/billRoutes')
