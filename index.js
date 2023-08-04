@@ -23,7 +23,7 @@ const sequelize = require('./config/db')
 const transactionRoutes = require('./routes/transactionRoutes')
 
 app.use(bodyParser.json())
-app.use('/api/v1/user', userRoutes)
+app.use('/api/v1/user', userRoutes) 
 app.use('/api/v1/wallet', walletRoutes)
 app.use('/api/v1/complains', complainRoute );
 app.use('/api/v1/transactions', transactionRoute);
