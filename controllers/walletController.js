@@ -87,14 +87,19 @@ const completeWalletFunding = async (req, res) => {
 
     const { reference } = req.body
     const user_id = req.params.user
-    if (!reference || !user_id) { 
-        res.status(400).json({
-            status: false,
-            message: "All fields are required",
-            others: `${reference}${user_id}`
-        })
-        return
-    }
+    res.status(400).json({
+        status: false,
+        message: "All fields are required",
+        others: `${reference} ${user_id}`
+    })
+    return
+    // if (!reference || !user_id) { 
+    //     res.status(400).json({
+    //         status: false,
+    //         message: "All fields are required"
+    //     })
+    //     return
+    // }
     const completeTransaction = await completePayment(reference)
     if (completeTransaction.data.data.status !="success") { 
         res.status(400).json({
