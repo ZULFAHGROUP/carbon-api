@@ -90,7 +90,7 @@ const completeWalletFunding = async (req, res) => {
     if (!reference || !user_id) { 
         res.status(400).json({
             status: false,
-            message: "All fields are required"
+            message: "All fields are required"+reference+user_id
         })
         return
     }

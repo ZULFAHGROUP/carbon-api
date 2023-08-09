@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/23a76215-d123-4fe7-88b2-c9da3b217245/resourceGroups/appsvc_linux_centralus_premium/providers/Microsoft.Web/sites/carbon-api-test",
+  "appService.deploySubpath": "."
+}
