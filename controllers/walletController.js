@@ -85,7 +85,8 @@ const startWalletFunding = async (req, res) => {
 
 const completeWalletFunding = async (req, res) => { 
 
-    const { reference, user_id } = req.body
+    const { reference } = req.body
+    const user_id = req.params.user
     if (!reference || !user_id) { 
         res.status(400).json({
             status: false,
