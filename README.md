@@ -12,4 +12,5 @@ The best fintech app
 
 1.
 2. Abdullah Saba - [Github](https://github.com/ayom04) / [LinkedIn](https://www.linkedin.com/in/abdullah-saba-72845a256/)
-3.
+3.  Fatimah Suleiman - [Github](https://github.com/Faty-Suleiman) / [LinkedIn](https://www.linkedin.com/in/in/fatima-suleiman-1a0454156/)
+
