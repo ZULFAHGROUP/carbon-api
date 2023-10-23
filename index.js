@@ -12,7 +12,7 @@ const loggerRoutes = require('./routes/loggerRoutes')
 const complainRoute = require('./routes/complainLogRoute');
 const transactionRoute = require('./routes/getTransactionRoute');
 const faqRoute = require('./routes/faqRoute');
-
+const cors = require('cors')
 
 const bankRoutes = require('./routes/bankRoutes')
 
@@ -23,6 +23,7 @@ const sequelize = require('./config/db')
 const transactionRoutes = require('./routes/transactionRoutes')
 
 app.use(bodyParser.json())
+app.use(cors())
 app.use('/api/v1/user', userRoutes) 
 app.use('/api/v1/wallet', walletRoutes)
 app.use('/api/v1/complains', complainRoute );
@@ -46,6 +47,7 @@ app.use('/api/v1/activity', loggerRoutes)
   sequelize.authenticate()
   .then(() => {
    console.log('Connection has been established successfully.');
+
     app.listen(port, () => {
       displayRoutes(app);
     })

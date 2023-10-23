@@ -109,7 +109,7 @@ const completeWalletFunding = async (req, res) => {
     })
 }
 const getWalletBalance = async (req, res) => {
-    const user_id = req.params.user_id
+    const  user_id  = "29bb056b-8193-4682-bedb-4fbd5c5cac9d" //req.params
     try {
         const getWallet = await getUserWallet(user_id)
         const walletBalance = getWallet.amount_after

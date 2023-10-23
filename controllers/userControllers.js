@@ -11,6 +11,8 @@ const { v4: uuidv4 } = require('uuid');
 const { sendSms } = require('../services/sms')
 const { sendEmail } = require('../services/email')
 const { credit } = require('./walletController')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const createUser = async (req, res) => {
     //create user
     const { error } = validateCreateAccount(req.body)
@@ -256,7 +258,14 @@ const userLogin = async(req, res) => {
 
 		const compareHash = await bcrypt.compare(password, checkIfUserExists.password_hash)
         if (!compareHash) throw new Error("Invalid email or password")
-        if (!checkIfUserExists.isOtpVerified) throw new Error("Account not verified")
+        if (!checkIfUserExists.isOtpVerified) {
+            res.status(400).json({
+                status: false,
+                level: 2,
+                message: "Account not verified"
+            })
+            return
+        }
         const token = await jwt.sign(dataToaddInMyPayload, process.env.JWT_SECRET, { expiresIn: '1d' })
 
     res.status(200).json({

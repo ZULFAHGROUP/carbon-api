@@ -7,7 +7,7 @@ const TransactionStatusEnum = {
     PENDING: "pending",
     FAILED: "failed",
     ROLLBACK: "rollback",
-    SUCCESS: "success"
+    SUCCESS: "completed"
 }
 
 const TransactionTypeEnum = {

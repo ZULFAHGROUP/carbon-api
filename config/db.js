@@ -6,7 +6,7 @@ const { Sequelize } = require('sequelize')
         process.env.DATABASE_PASSWORD,
          {
              host: process.env.HOST,      
-             port: process.env.DATABASE_PORT,
+             port: process.env.DATABASE_PORT || '8889',
              dialect: 'mysql' /* one of | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
         })
          
